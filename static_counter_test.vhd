@@ -54,20 +54,32 @@ begin
 		assert q1 = to_unsigned(0, WIDTH) report "Err1";
 		assert q2 = to_unsigned(0, WIDTH) report "Err1";
 
+		-- testing for counting up
 		reset <= '0';
-		wait until (carry = '1');
-		wait for 100ns;
---		for a in 0 to 9 loop
---			for b in 0 to 9 loop
---				for c in 0 to 9 loop
---					wait until falling_edge(clock);
---					assert q0 = to_unsigned(c, WIDTH) report "Err2 DIG0";
---				end loop;
---				assert q1 = to_unsigned(b, WIDTH) report "Err2 DIG1";
---			end loop;
---			assert q2 = to_unsigned(a, WIDTH) report "Err2 DIG2";
---		end loop;
+		assert q0 = to_unsigned(0, WIDTH) report "Err2 DIG0_0";
+		assert q1 = to_unsigned(0, WIDTH) report "Err2 DIG1_0";
+		assert q2 = to_unsigned(0, WIDTH) report "Err2 DIG2_0";
+		for a in 0 to 9 loop
+			assert q2 = to_unsigned(a, WIDTH) report "Err3 DIG2 shoud be " & integer'image(a) & ", but is " & integer'image(to_integer(q2));
+			for b in 0 to 9 loop
+				assert q1 = to_unsigned(b, WIDTH) report "Err3 DIG1 shoud be " & integer'image(b) & ", but is " & integer'image(to_integer(q1));
+				for c in 0 to 9 loop
+					assert q0 = to_unsigned(c, WIDTH) report "Err3 DIG0 shoud be " & integer'image(c) & ", but is " & integer'image(to_integer(q0));
+					wait until falling_edge(clock);
+				end loop;
+			end loop;
+		end loop;
 
+		-- testing for reset signal
+		wait for 1us;
+		wait until falling_edge(clock);
+		reset <='1';
+		wait until falling_edge(clock);
+		reset <='0';
+		assert q0 = to_unsigned(0, WIDTH) report "Err4 DIG0_0";
+		assert q1 = to_unsigned(0, WIDTH) report "Err4 DIG1_0";
+		assert q2 = to_unsigned(0, WIDTH) report "Err4 DIG2_0";
+		
       clock_run <= false;
       wait;
     end process;
